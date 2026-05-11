@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Video Downloader</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Video Downloader</h1>
+        <p>Локальная очередь загрузок через yt-dlp, ffmpeg и PO-token provider</p>
+      </div>
+      <div class="health" id="healthBadge">Проверка инструментов...</div>
+    </header>
+
+    <main class="app-shell">
+      <section class="panel compose-panel" aria-labelledby="new-download-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="new-download-title">Новая загрузка</h2>
+            <p>Вставьте одну или несколько ссылок, каждая может быть с новой строки.</p>
+          </div>
+          <button class="quiet-button" id="clearButton" type="button">Очистить</button>
+        </div>
+
+        <label class="field wide">
+          <span>Ссылки</span>
+          <textarea id="urlInput" rows="7" spellcheck="false" placeholder="https://www.youtube.com/watch?v=..."></textarea>
+        </label>
+
+        <div class="options-grid">
+          <label class="field">
+            <span>Формат</span>
+            <select id="formatSelect">
+              <option value="mp3">MP3 audio</option>
+              <option value="m4a">M4A audio</option>
+              <option value="wav">WAV audio</option>
+              <option value="flac">FLAC audio</option>
+              <option value="mp4">MP4 video</option>
+              <option value="webm">WEBM video</option>
+              <option value="best">Оригинал / best</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Качество аудио</span>
+            <select id="audioQualitySelect">
+              <option value="best">Лучшее</option>
+              <option value="320">320k</option>
+              <option value="192">192k</option>
+              <option value="128">128k</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Качество видео</span>
+            <select id="videoHeightSelect">
+              <option value="best">Лучшее</option>
+              <option value="2160">2160p</option>
+              <option value="1440">1440p</option>
+              <option value="1080">1080p</option>
+              <option value="720">720p</option>
+              <option value="480">480p</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Режим</span>
+            <select id="playlistModeSelect">
+              <option value="single">Только видео</option>
+              <option value="playlist">Плейлист</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Cookies</span>
+            <select id="cookiesModeSelect">
+              <option value="off">Не использовать</option>
+              <option value="firefox">Firefox</option>
+              <option value="chrome">Chrome</option>
+              <option value="edge">Edge</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Папка</span>
+            <input id="outputDirInput" type="text" />
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button class="primary-button" id="addButton" type="button">Добавить в очередь</button>
+          <button class="secondary-button" id="probeButton" type="button">Проверить ссылку</button>
+        </div>
+
+        <div class="probe" id="probeBox" hidden></div>
+      </section>
+
+      <section class="panel queue-panel" aria-labelledby="queue-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="queue-title">Очередь</h2>
+            <p id="queueSummary">Задач пока нет.</p>
+          </div>
+          <button class="quiet-button" id="refreshButton" type="button">Обновить</button>
+        </div>
+        <div class="jobs" id="jobsList"></div>
+      </section>
+
+      <section class="panel settings-panel" aria-labelledby="settings-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="settings-title">Настройки</h2>
+            <p>Пути сохраняются локально в data/config.json.</p>
+          </div>
+          <button class="secondary-button" id="saveSettingsButton" type="button">Сохранить</button>
+        </div>
+
+        <div class="settings-grid">
+          <label class="field">
+            <span>Параллельные загрузки</span>
+            <input id="concurrencyInput" type="number" min="1" max="4" step="1" />
+          </label>
+          <label class="field">
+            <span>Cookies по умолчанию</span>
+            <select id="defaultCookiesSelect">
+              <option value="off">Не использовать</option>
+              <option value="firefox">Firefox</option>
+              <option value="chrome">Chrome</option>
+              <option value="edge">Edge</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Python</span>
+            <input id="pythonPathInput" type="text" />
+          </label>
+          <label class="field">
+            <span>ffmpeg</span>
+            <input id="ffmpegPathInput" type="text" />
+          </label>
+          <label class="field">
+            <span>Deno</span>
+            <input id="denoPathInput" type="text" />
+          </label>
+          <label class="field wide">
+            <span>PO-token provider</span>
+            <input id="poServerHomeInput" type="text" />
+          </label>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

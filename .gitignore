@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+
+data/*.json
+data/*.pid
+downloads/*
+!downloads/.gitkeep
+!data/.gitkeep
+
+*.log
+.DS_Store
+Thumbs.db
