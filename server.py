@@ -34,6 +34,7 @@ MAX_HISTORY = 200
 AUDIO_FORMATS = {"mp3", "m4a", "wav", "flac"}
 VIDEO_FORMATS = {"mp4", "webm", "best"}
 COOKIE_MODES = {"off", "firefox", "chrome", "edge"}
+THEMES = {"light", "dark"}
 
 PROGRESS_RE = re.compile(
     r"\[download\]\s+(?P<percent>\d+(?:\.\d+)?)%",
@@ -61,6 +62,7 @@ def default_settings() -> dict[str, Any]:
         "ffmpegPath": shutil.which("ffmpeg") or "",
         "denoPath": str(deno_path) if deno_path.exists() else (shutil.which("deno") or ""),
         "poServerHome": str(po_home) if po_home.exists() else "",
+        "theme": "light",
     }
 
 
@@ -95,6 +97,8 @@ def normalize_settings(settings: dict[str, Any]) -> dict[str, Any]:
         base["concurrency"] = 2
     if base.get("defaultCookiesMode") not in COOKIE_MODES:
         base["defaultCookiesMode"] = "off"
+    if base.get("theme") not in THEMES:
+        base["theme"] = "light"
     base["outputDir"] = str(Path(str(base.get("outputDir") or DOWNLOADS_ROOT)).expanduser())
     for key in ("pythonPath", "ffmpegPath", "denoPath", "poServerHome"):
         base[key] = str(base.get(key) or "")

@@ -1,7 +1,9 @@
 const $ = (selector) => document.querySelector(selector);
+const THEME_STORAGE_KEY = "mediadock-theme";
 
 const els = {
   health: $("#healthBadge"),
+  themeToggle: $("#themeToggle"),
   urlInput: $("#urlInput"),
   format: $("#formatSelect"),
   audioQuality: $("#audioQualitySelect"),
@@ -38,6 +40,36 @@ const statusLabels = {
 let currentSettings = {};
 let pollHandle = null;
 let toastTimer = null;
+
+function normalizeTheme(theme) {
+  return theme === "dark" ? "dark" : "light";
+}
+
+function storedTheme() {
+  try {
+    return normalizeTheme(localStorage.getItem(THEME_STORAGE_KEY));
+  } catch {
+    return "light";
+  }
+}
+
+function selectedTheme() {
+  return els.themeToggle?.checked ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  const normalized = normalizeTheme(theme);
+  document.documentElement.dataset.theme = normalized;
+  document.documentElement.style.colorScheme = normalized;
+  if (els.themeToggle) {
+    els.themeToggle.checked = normalized === "dark";
+  }
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, normalized);
+  } catch {
+    // Theme still applies for the current page even when localStorage is unavailable.
+  }
+}
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -97,6 +129,7 @@ function readDownloadPayload() {
 
 function applySettings(settings) {
   currentSettings = settings || {};
+  applyTheme(currentSettings.theme || storedTheme());
   els.outputDir.value = currentSettings.outputDir || "";
   els.concurrency.value = currentSettings.concurrency || 2;
   els.defaultCookies.value = currentSettings.defaultCookiesMode || "off";
@@ -105,6 +138,29 @@ function applySettings(settings) {
   els.ffmpegPath.value = currentSettings.ffmpegPath || "";
   els.denoPath.value = currentSettings.denoPath || "";
   els.poServerHome.value = currentSettings.poServerHome || "";
+}
+
+async function saveTheme(theme) {
+  const normalized = normalizeTheme(theme);
+  applyTheme(normalized);
+  if (els.themeToggle) {
+    els.themeToggle.disabled = true;
+  }
+  try {
+    const data = await api("/api/settings", {
+      method: "POST",
+      body: JSON.stringify({ theme: normalized }),
+    });
+    currentSettings = data.settings || { ...currentSettings, theme: normalized };
+    applyTheme(currentSettings.theme || normalized);
+    showToast(normalized === "dark" ? "Тёмная тема включена." : "Светлая тема включена.");
+  } catch (error) {
+    showToast(`Не удалось сохранить тему: ${error.message}`);
+  } finally {
+    if (els.themeToggle) {
+      els.themeToggle.disabled = false;
+    }
+  }
 }
 
 async function loadHealth() {
@@ -280,6 +336,7 @@ async function saveSettings() {
       ffmpegPath: els.ffmpegPath.value,
       denoPath: els.denoPath.value,
       poServerHome: els.poServerHome.value,
+      theme: selectedTheme(),
     };
     const data = await api("/api/settings", { method: "POST", body: JSON.stringify(payload) });
     applySettings(data.settings);
@@ -310,6 +367,7 @@ function wireEvents() {
   });
   els.refresh.addEventListener("click", loadJobs);
   els.saveSettings.addEventListener("click", saveSettings);
+  els.themeToggle.addEventListener("change", () => saveTheme(selectedTheme()));
   els.format.addEventListener("change", () => {
     const audio = ["mp3", "m4a", "wav", "flac"].includes(els.format.value);
     els.audioQuality.disabled = !audio;
@@ -318,6 +376,7 @@ function wireEvents() {
 }
 
 async function boot() {
+  applyTheme(storedTheme());
   wireEvents();
   await loadHealth();
   await loadJobs();

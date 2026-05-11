@@ -4,6 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Video Downloader</title>
+    <script>
+      (() => {
+        const theme = localStorage.getItem("mediadock-theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
@@ -12,7 +20,14 @@
         <h1>Video Downloader</h1>
         <p>Локальная очередь загрузок через yt-dlp, ffmpeg и PO-token provider</p>
       </div>
-      <div class="health" id="healthBadge">Проверка инструментов...</div>
+      <div class="topbar-actions">
+        <label class="theme-toggle">
+          <input id="themeToggle" type="checkbox" />
+          <span class="theme-switch" aria-hidden="true"></span>
+          <span>Тёмная тема</span>
+        </label>
+        <div class="health" id="healthBadge">Проверка инструментов...</div>
+      </div>
     </header>
 
     <main class="app-shell">

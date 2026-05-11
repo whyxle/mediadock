@@ -19,6 +19,12 @@ class ServerLogicTests(unittest.TestCase):
         )
         self.assertEqual(urls, ["https://example.com/a", "https://youtu.be/abc"])
 
+    def test_normalize_settings_keeps_valid_theme_and_falls_back(self) -> None:
+        dark = server.normalize_settings({"theme": "dark"})
+        invalid = server.normalize_settings({"theme": "sepia"})
+        self.assertEqual(dark["theme"], "dark")
+        self.assertEqual(invalid["theme"], "light")
+
     def test_build_audio_command_uses_extract_audio(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             settings = server.normalize_settings(
