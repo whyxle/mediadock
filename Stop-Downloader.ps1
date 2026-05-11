@@ -8,7 +8,7 @@ if (Test-Path $pidPath) {
     $serverPid = Get-Content $pidPath | Select-Object -First 1
     if ($serverPid) {
         Stop-Process -Id ([int]$serverPid) -Force
-        Write-Host "Остановлен сервер Video Downloader, PID: $serverPid"
+        Write-Host "Stopped MediaDock server, PID: $serverPid"
     }
 }
 
@@ -16,10 +16,10 @@ $denoPath = Join-Path $WorkspaceRoot "deno\deno.exe"
 $listeners = netstat -ano | Select-String ":4416" | Select-String "LISTENING"
 foreach ($listener in $listeners) {
     $parts = ($listener.Line -split "\s+") | Where-Object { $_ }
-    $pid = [int]$parts[-1]
-    $process = Get-CimInstance Win32_Process -Filter "ProcessId = $pid"
+    $listenerPid = [int]$parts[-1]
+    $process = Get-CimInstance Win32_Process -Filter "ProcessId = $listenerPid"
     if ($process.CommandLine -like "*$denoPath*") {
-        Stop-Process -Id $pid -Force
-        Write-Host "Остановлен PO-token provider, PID: $pid"
+        Stop-Process -Id $listenerPid -Force
+        Write-Host "Stopped PO-token provider, PID: $listenerPid"
     }
 }
