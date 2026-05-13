@@ -10,3 +10,7 @@ downloads/*
 *.log
 .DS_Store
 Thumbs.db
+
+launcher/**/bin/
+launcher/**/obj/
+launcher/publish/

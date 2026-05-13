@@ -38,7 +38,13 @@ You can change all tool paths from the Settings panel in the app.
 
 ## Run
 
-Open PowerShell:
+Double-click:
+
+```text
+MediaDock.exe
+```
+
+Or open PowerShell:
 
 ```powershell
 cd "C:\path\to\video-downloader-app"
